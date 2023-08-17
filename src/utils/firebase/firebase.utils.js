@@ -7,6 +7,7 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signOut,
+  onAuthStateChanged,
 } from "firebase/auth";
 import {
   getFirestore,
@@ -39,6 +40,8 @@ googleProvider.setCustomParameters({
   prompt: "select_account",
 });
 
+
+// this is always listening in to the current instance of the crwn-clothing that is being ran. That is wy on refresh, it still knows user is signed in
 export const auth = getAuth(); //doesnt have "new" because we always want the same authentication
 
 export const signInWithGoogleRedirect = () =>
@@ -90,3 +93,9 @@ export const signInAuthUserWithEmailAndPassword = async (email, password) => {
 };
 
 export const signOutUser = async () => await signOut(auth);
+
+export const onAuthStateChangedlistener = ( callback ) => 
+{
+  if (!callback) return;
+  onAuthStateChanged(auth, callback)
+}

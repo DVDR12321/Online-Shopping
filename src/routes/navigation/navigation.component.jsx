@@ -7,11 +7,10 @@ import { ReactComponent as CrwnLogo } from "../../assets/crown.svg";
 import{ UserContext } from "../../context/user.context";
 
 const Navigation = () => {
-  const { currentUser, setCurrentUser } = useContext(UserContext);
+  const { currentUser } = useContext(UserContext);
 
   const singOutContexthandler = async () => {
     await signOutUser();
-    setCurrentUser(null);
   }
   //console.log(currentUser)
   return (
