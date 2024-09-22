@@ -14,6 +14,10 @@ import {
   doc, //get document
   getDoc, // get document data
   setDoc, // set document data
+  collection,
+  writeBatch,
+  query,
+  getDocs
 } from "firebase/firestore";
 
 const firebaseConfig = {
@@ -53,6 +57,33 @@ export const signInWithGooglePopup = () =>
 
 export const db = getFirestore(); // creating instance of a database
 
+export const addCollectionAndDocuments = async (collectionKey, objectsToAdd) => {
+    const collectionRef = collection(db, collectionKey);
+    const batch = writeBatch(db);
+
+    objectsToAdd.forEach((object) => {
+      const docRef = doc(collectionRef, object.title.toLowerCase());
+      batch.set(docRef, object);
+      
+    })
+    await batch.commit();
+    console.log('done');
+
+}
+
+export const getCategoriesAndDocuments = async () => {
+  const collectionRef = collection(db, 'categories');
+  const q = query(collectionRef);
+  
+  const querySnapshot = await getDocs(q);
+  const categoryMap = querySnapshot.docs.reduce((accumulator, docSnapshot) => {
+    const { title, items } = docSnapshot.data();
+    accumulator[title.toLowerCase()] = items;
+    return accumulator;
+  }, {});
+  
+  return categoryMap;
+}
 
 //adding user to database
 export const createUserDocumentFromAuth = async (userAuth, additionalInfo) => {
@@ -60,7 +91,7 @@ export const createUserDocumentFromAuth = async (userAuth, additionalInfo) => {
 
   const userDocRef = doc(db, "users", userAuth.uid);
 
-  const userSnapshot = await getDoc(userDocRef);
+  const userSnapshot = await getDocs(userDocRef);
 
   if (!userSnapshot.exists()) {
     const { displayName, email } = userAuth;
